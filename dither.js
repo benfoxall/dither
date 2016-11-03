@@ -25,9 +25,20 @@ function gradient(offset){
 ctx.fillStyle = gradient(0)
 ctx.fillRect(0,0,w,h)
 
+// var quant = d3.scaleQuantize()
+//   .domain([0, 255])
+//   .range([1,2,3,5])
+  // .ticks(10)
 
-function dither(){
+function dither(stops){
   var colorCache = {}
+
+  var quant = d3.scaleQuantize()
+    .domain([0, 255])
+    .range(d3.range(0,255,255/(stops||2)))
+
+  window.q = quant
+
 
   var image = ctx.getImageData(0,0,w,h)
 
@@ -72,11 +83,12 @@ function dither(){
   ctx.putImageData(image,0,0)
 
   function closest(p) {
-    return p < 50 ? 0 :
-           p < 100 ? 60 :
-           p < 150 ? 100 :
-           p < 200 ? 160 :
-           255
+    return quant(p)
+    // return p < 50 ? 0 :
+    //        p < 100 ? 60 :
+    //        p < 150 ? 100 :
+    //        p < 200 ? 160 :
+    //        255
   }
   function index(x,y) {
     return (x + (y * w)) * 4
@@ -86,7 +98,9 @@ function dither(){
 
     if(colorCache[i]) return colorCache[i]
 
-    console.log("mis", i, d3.interpolateViridis(i/255))
+    // console.log("mis", i/255, d3.interpolateViridis(i/255))
+
+
     var c = d3.interpolateViridis(i/255)
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(c)
 
@@ -96,16 +110,26 @@ function dither(){
         b: parseInt(result[3], 16)
     }
 
+
+    // var c = d3.interpolateCool(i/255)
+    // var result = /^rgb\((\d+), (\d+), (\d+)\)$/i.exec(c)
+    //
+    // return colorCache[i] = {
+    //     r: parseInt(result[1], 16),
+    //     g: parseInt(result[2], 16),
+    //     b: parseInt(result[3], 16)
+    // }
+
   }
 }
 
-dither()
+dither(10)
 
 
-function render(t){
+function render(time){
   requestAnimationFrame(render)
 
-  t = Math.sin(t/600) * 1000
+  t = Math.sin(time/600) * 1000
 
   var offset = ((t / 5000) % 1) * w
 
@@ -115,8 +139,10 @@ function render(t){
   ctx.fillStyle = gradient(offset-w)
   ctx.fillRect(offset-w,0,w,h)
 
-  dither()
+  var p = (time/600) % 20
+
+  dither(Math.ceil(p) + 1)
 
 }
 
-// requestAnimationFrame(render)
+requestAnimationFrame(render)
