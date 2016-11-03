@@ -98,9 +98,6 @@ function dither(stops){
 
     if(colorCache[i]) return colorCache[i]
 
-    // console.log("mis", i/255, d3.interpolateViridis(i/255))
-
-
     var c = d3.interpolateViridis(i/255)
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(c)
 
@@ -123,49 +120,44 @@ function dither(stops){
   }
 }
 
-dither(10)
 
 
 
 
 
 
+var px = 0.5, py = 0.5, requested
 
-var px = 0
-var py = 0
-var requested;
-
-window.addEventListener('mousemove', function(e) {
-  px = e.clientX / window.innerWidth
-  py = e.clientY / window.innerHeight
-  rendered = false
-
+function requestRender(){
   if(!requested) {
-    requestAnimationFrame(renderG)
+    requestAnimationFrame(render)
     requested = true
   }
+}
 
-})
+function handleMouse(e) {
+  px = e.clientX / window.innerWidth
+  py = e.clientY / window.innerHeight
+  requestRender()
+}
 
-window.addEventListener('touchmove', function(e){
+function handleTouch(e) {
   e.preventDefault()
 
   var t0 = e.touches[0]
-  
+
   px = t0.clientX / window.innerWidth
   py = t0.clientY / window.innerHeight
-  rendered = false
 
-  if(!requested) {
-    requestAnimationFrame(renderG)
-    requested = true
-  }
+  requestRender()
+}
 
-
-})
+window.addEventListener('mousemove', handleMouse, {passive:false})
+window.addEventListener('touchmove', handleTouch, {passive:false})
+window.addEventListener('touchstart', handleTouch, {passive:false})
 
 
-function renderG(t){
+function render(t){
 
   requested = false
 
@@ -180,3 +172,6 @@ function renderG(t){
   dither(Math.floor(py*20)+2)
 
 }
+
+
+requestRender()
