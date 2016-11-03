@@ -17,7 +17,6 @@ size()
 window.addEventListener('resize', size)
 
 
-
 function gradient(offset){
   var g = ctx.createLinearGradient(offset,0,w+offset,0)
 
@@ -127,12 +126,34 @@ function dither(stops){
 dither(10)
 
 
-function render(time){
-  requestAnimationFrame(render)
 
-  t = Math.sin(time/600) * 1000
 
-  var offset = ((t / 5000) % 1) * w
+
+
+
+var px = 0
+var py = 0
+var requested;
+
+window.addEventListener('mousemove', function(e) {
+  px = e.clientX / window.innerWidth
+  py = e.clientY / window.innerHeight
+  rendered = false
+  console.log(px)
+
+  if(!requested) {
+    requestAnimationFrame(renderG)
+    requested = true
+  }
+
+})
+
+
+function renderG(t){
+
+  requested = false
+
+  var offset = px * w
 
   ctx.fillStyle = gradient(offset)
   ctx.fillRect(offset,0,w,h)
@@ -140,10 +161,6 @@ function render(time){
   ctx.fillStyle = gradient(offset-w)
   ctx.fillRect(offset-w,0,w,h)
 
-  var p = (time/600) % 20
-
-  dither(Math.ceil(p) + 1)
+  dither(Math.floor(py*20)+2)
 
 }
-
-requestAnimationFrame(render)
