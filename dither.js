@@ -139,12 +139,26 @@ window.addEventListener('mousemove', function(e) {
   px = e.clientX / window.innerWidth
   py = e.clientY / window.innerHeight
   rendered = false
-  console.log(px)
 
   if(!requested) {
     requestAnimationFrame(renderG)
     requested = true
   }
+
+})
+
+window.addEventListener('touchmove', function(e){
+  var t0 = e.touches[0]
+  
+  px = t0.clientX / window.innerWidth
+  py = t0.clientY / window.innerHeight
+  rendered = false
+
+  if(!requested) {
+    requestAnimationFrame(renderG)
+    requested = true
+  }
+
 
 })
 
