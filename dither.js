@@ -148,6 +148,8 @@ window.addEventListener('mousemove', function(e) {
 })
 
 window.addEventListener('touchmove', function(e){
+  e.preventDefault()
+
   var t0 = e.touches[0]
   
   px = t0.clientX / window.innerWidth
