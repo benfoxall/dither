@@ -5,12 +5,18 @@ var w = canvas.width = 100
 var h = canvas.height = 100
 
 var ctx = canvas.getContext('2d')
-ctx.fillRect(0,0,20,20)
-
-
-canvas.style.height = (h * 5) + 'px'
-canvas.style.width = (w * 5) + 'px'
 ctx.imageSmoothingEnabled = false
+
+function size(){
+  var scale = Math.max(window.innerWidth, window.innerHeight) / w
+
+  canvas.style.height = (h * scale) + 'px'
+  canvas.style.width = (w * scale) + 'px'
+}
+size()
+window.addEventListener('resize', size)
+
+
 
 function gradient(offset){
   var g = ctx.createLinearGradient(offset,0,w+offset,0)
@@ -84,11 +90,6 @@ function dither(stops){
 
   function closest(p) {
     return quant(p)
-    // return p < 50 ? 0 :
-    //        p < 100 ? 60 :
-    //        p < 150 ? 100 :
-    //        p < 200 ? 160 :
-    //        255
   }
   function index(x,y) {
     return (x + (y * w)) * 4
